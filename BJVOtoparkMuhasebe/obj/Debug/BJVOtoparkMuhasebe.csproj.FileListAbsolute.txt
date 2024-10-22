@@ -1,0 +1,14 @@
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\bin\Debug\BJVOtoparkMuhasebe.exe.config
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\bin\Debug\BJVOtoparkMuhasebe.exe
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\bin\Debug\BJVOtoparkMuhasebe.pdb
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.csproj.AssemblyReference.cache
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.Form1.resources
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.Properties.Resources.resources
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.csproj.GenerateResource.cache
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.csproj.CoreCompileInputs.cache
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.exe
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.pdb
+C:\Users\Parkuser\source\repos\BJVOtoparkMuhasebeRapor\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.ihGenelHasilatFrm.resources
+C:\Users\ebircan\source\repos\BJVOtoparkMuhasebeRapor - v2\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.csproj.AssemblyReference.cache
+C:\Users\ebircan\source\repos\BJVOtoparkMuhasebeRapor - v2\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.exe
+C:\Users\ebircan\source\repos\BJVOtoparkMuhasebeRapor - v2\BJVOtoparkMuhasebe\obj\Debug\BJVOtoparkMuhasebe.pdb

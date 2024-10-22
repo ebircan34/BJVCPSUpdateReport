@@ -1,0 +1,5 @@
+dataGridView.EnableHeadersVisualStyles = false;
+dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.Purple;
+251
+210
+47

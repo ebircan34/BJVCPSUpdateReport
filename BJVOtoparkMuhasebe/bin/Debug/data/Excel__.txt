@@ -1,0 +1,382 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.Data.SqlClient;
+using System.IO;
+
+namespace Abone300
+{
+    public partial class Daily_Report_Detail : Form
+    {
+        SqlConnection baglanti;
+        public string connetionString;
+        decimal kredikarti, geneltoplam, Tnakit, Tfatura, Tfis,TCari,TEft;
+        public string[] Say;
+        public int GunCongress15, GunCongress30, GunCongress30Motor, GunCongress15Motor, GunCongressPicMin15, GunCongressPicMin30, TavMilasPers, Bireysel, OtobusTur, MinibusTur, RentACar, TumMeydanlar, BjvApronKartlilar, Talpa;
+        public Daily_Report_Detail()
+        {
+            InitializeComponent();
+        }
+
+        private void DB_Connect_DRX1()
+        {
+            StreamReader oku = new StreamReader(@"data\Connection_DB.dat");
+            connetionString = oku.ReadLine();
+            baglanti = new SqlConnection(connetionString);
+            baglanti.Open();
+            //MessageBox.Show("Connection Open  !");
+            baglanti.Close();
+        }
+        private void Daily_Report_Detail_Load(object sender, EventArgs e)
+        {
+            DB_Connect_DRX1();
+            dateTimePicker1.Value = DateTime.Today;
+            dateTimePicker3.Value= DateTime.Today;
+            dataGridView1.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            DateTime dt_Ay_ilkGun = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            dateTimePicker2.Value = dt_Ay_ilkGun.Date;
+            dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridView1.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            validasyon_doldur(); article_doldur();
+
+
+
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //Congress15();
+        }
+
+        private void buttonDR_Click(object sender, EventArgs e)
+        {
+            kredikarti = 0; geneltoplam = 0; Tnakit = 0; Tfatura = 0; Tfis = 0;
+            TEft = 0;
+            dataGridView1.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            baglanti.Open();
+            DataTable dt = new DataTable();
+            dt.Clear();
+            SqlDataAdapter da = new SqlDataAdapter("Select StartDate,ProcessTime,PlateNo,Article,Revenue,STime,KKRevenue,GRevenue,TRevenue,SalesMethodNet,Carpark,DataCarrier,InvoiceStatus,Ext2 as Abone,Ext3 as Kasa,SPersonel,Shift as Vardiya,SCompanyName,CompanyAddress,Companyilce,CompanyCity,TaxNo,TaxReg from Sales where StartDate>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd")+"'", baglanti);
+            da.Fill(dt);
+            //MaxCount = tabloFirma.Rows.Count;
+            dataGridView1.DataSource = dt;
+            baglanti.Close();
+        }
+
+
+        private void Congress15()
+        {
+            baglanti.Open();
+            
+            for (int i = 0; i <= comboBox1.Items.Count-1; i++) 
+            {
+                MessageBox.Show(comboBox1.Items[i].ToString());
+                SqlCommand cmd = new SqlCommand("select count(article) from Sales where StartDate>='"+dateTimePicker2.Value.ToString("yyyy-MM-dd")+"' and StartDate<='"+dateTimePicker3.Value.ToString("yyyy-MM-dd")+"' and Article='"+comboBox1.Items[i].ToString()+"'  ", baglanti);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        Console.WriteLine("{0}\t{1}", dr.GetInt32(i),
+                            dr.GetString(1));
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No rows found.");
+                }
+                dr.Close();
+
+
+
+
+
+
+
+
+
+
+                Say[i]=dr[0].ToString();
+                //dr.Close();
+            }
+            
+            baglanti.Close();
+            int z = 0;
+            
+
+
+       }
+
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            kredikarti = 0; geneltoplam = 0; Tnakit = 0; Tfatura = 0; Tfis = 0; TCari=0;
+            baglanti.Open();
+            DataTable dt2 = new DataTable();
+            dt2.Clear();
+            SqlDataAdapter da = new SqlDataAdapter("Select StartDate,ProcessTime,PlateNo,Article,Revenue,STime,KKRevenue,GRevenue,TRevenue,SalesMethodNet,Carpark,DataCarrier,InvoiceStatus,Ext2 as Abone,Ext3 as Kasa,SPersonel,Shift as Vardiya,SCompanyName,CompanyAddress,Companyilce,CompanyCity,TaxNo,TaxReg from Sales where StartDate>='" + dateTimePicker2.Value.ToString("yyyy-MM-dd") + "' and StartDate<='" + dateTimePicker3.Value.ToString("yyyy-MM-dd") + "' ", baglanti);
+            da.Fill(dt2);
+            //MaxCount = tabloFirma.Rows.Count;
+            dataGridView1.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridView1.DataSource = dt2;
+            baglanti.Close();
+               
+        }
+
+        private void validasyon_doldur()
+        {
+
+            comboBox1.Items.Clear();
+            baglanti.Open();
+            SqlCommand cmd = new SqlCommand("Select * from Validasyon", baglanti);
+            SqlDataReader dr_validasyon = cmd.ExecuteReader();
+
+            while (dr_validasyon.Read())
+            {
+                comboBox1.Items.Add(dr_validasyon["Validasyon"]);
+
+            }
+            baglanti.Close();
+            dr_validasyon.Close();
+        }
+
+        private void article_doldur()
+        {
+            
+           
+            baglanti.Open();
+            SqlCommand cmd = new SqlCommand("Select * from Article", baglanti);
+            SqlDataReader dr = cmd.ExecuteReader();
+
+            while (dr.Read())
+            {
+                comboBox1.Items.Add(dr["Article"]);
+
+            }
+            baglanti.Close();
+            dr.Close();
+        }
+
+
+
+        private void buttonExcel_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.RowCount == 0)
+                MessageBox.Show("Excel'e Aktarılacak Veri Bulunmamaktadır...", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else
+            {
+
+
+                GunCongress15 = 0; GunCongress30 = 0; GunCongress30Motor = 0; GunCongress15Motor = 0; GunCongressPicMin15 = 0; GunCongressPicMin30 = 0; TavMilasPers = 0; Bireysel = 0; OtobusTur = 0; MinibusTur = 0; RentACar = 0; TumMeydanlar = 0; BjvApronKartlilar = 0; Talpa=0;
+                kredikarti = 0; geneltoplam = 0; Tnakit = 0; Tfatura = 0; Tfis = 0;
+                this.Cursor = Cursors.WaitCursor;
+                Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+                Microsoft.Office.Interop.Excel.Workbook excelWorkbook;
+                Microsoft.Office.Interop.Excel.Worksheet excelWorksheet;
+                Microsoft.Office.Interop.Excel.Range excelCellrange;
+                //excelWorkbook = excel.Workbooks.Open(Application.StartupPath + "\\Rapor\\AboneDetayRaporu.xlsx");
+
+                excel.Visible = false;
+                excel.DisplayAlerts = false;
+               excelWorkbook = excel.Workbooks.Open("C:\\Rapor\\AboneDetayRaporu.xlsx");
+
+                excelWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)excelWorkbook.Worksheets.Item["ABONE"];
+
+                int satirArttirimi = 4;
+
+                
+
+                for (int i = 0; i < dataGridView1.RowCount; i++)
+                {
+                    //excelWorksheet.Cells[i + satirArttirimi, 1] = Convert.ToInt32(dataGridView1.Rows[i].Cells[""].Value);
+                                        
+                    
+                    excelWorksheet.Cells[i + satirArttirimi, 1] = Convert.ToDateTime(dataGridView1.Rows[i].Cells["StartDate"].Value).ToString("yyyy-MM-dd");
+                    excelWorksheet.Cells[i + satirArttirimi, 2] = Convert.ToDateTime(dataGridView1.Rows[i].Cells["ProcessTime"].Value);
+                    excelWorksheet.Cells[i + satirArttirimi, 3] = dataGridView1.Rows[i].Cells["PlateNo"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 4] = dataGridView1.Rows[i].Cells["Article"].Value.ToString();
+                                        
+                    excelWorksheet.Cells[i + satirArttirimi, 5] = Convert.ToDecimal(dataGridView1.Rows[i].Cells["Revenue"].Value);
+                    excelWorksheet.Cells[i + satirArttirimi, 6] = Convert.ToInt32(dataGridView1.Rows[i].Cells["STime"].Value);
+                    excelWorksheet.Cells[i + satirArttirimi, 7] = Convert.ToDecimal(dataGridView1.Rows[i].Cells["KKRevenue"].Value);
+                    excelWorksheet.Cells[i + satirArttirimi, 8] = Convert.ToDecimal(dataGridView1.Rows[i].Cells["GRevenue"].Value);
+                    excelWorksheet.Cells[i + satirArttirimi, 9] = Convert.ToDecimal(dataGridView1.Rows[i].Cells["TRevenue"].Value);
+                    excelWorksheet.Cells[i + satirArttirimi, 10] = dataGridView1.Rows[i].Cells["SalesMethodNet"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 11] = dataGridView1.Rows[i].Cells["Carpark"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 12] = dataGridView1.Rows[i].Cells["DataCarrier"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 13] = dataGridView1.Rows[i].Cells["InvoiceStatus"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 14] = dataGridView1.Rows[i].Cells["Abone"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 15] = dataGridView1.Rows[i].Cells["Kasa"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 16] = dataGridView1.Rows[i].Cells["SPersonel"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 17] = dataGridView1.Rows[i].Cells["Vardiya"].Value.ToString();
+
+
+
+
+
+
+
+                   // if (dataGridView1.Rows[i].Cells["SCompanyName"].Value.ToString()=="") { excelWorksheet.Cells[i + satirArttirimi, 16] = "_"; }
+                   // else excelWorksheet.Cells[i + satirArttirimi, 18] = dataGridView1.Rows[i].Cells["SCompanyName"].Value.ToString();
+
+                    //if (dataGridView1.Rows[i].Cells["CompanyAddress"].Value.ToString() == null) { excelWorksheet.Cells[i + satirArttirimi, 17] = "_"; }
+                   // else excelWorksheet.Cells[i + satirArttirimi, 19] = dataGridView1.Rows[i].Cells["CompanyAddress"].Value.ToString();
+
+                  //  if (dataGridView1.Rows[i].Cells["Companyilce"].Value.ToString() == null) { excelWorksheet.Cells[i + satirArttirimi, 18] = "_"; }
+                   // else excelWorksheet.Cells[i + satirArttirimi, 20] = dataGridView1.Rows[i].Cells["Companyilce"].Value.ToString();
+
+                   // if (dataGridView1.Rows[i].Cells["CompanyCity"].Value.ToString() == null) { excelWorksheet.Cells[i + satirArttirimi, 19] = "_"; }
+                   // else excelWorksheet.Cells[i + satirArttirimi, 21] = dataGridView1.Rows[i].Cells["CompanyCity"].Value.ToString();
+
+                 //  if (dataGridView1.Rows[i].Cells["TaxNo"].Value.ToString() == null) { excelWorksheet.Cells[i + satirArttirimi, 20] = "_"; }
+                  //  else excelWorksheet.Cells[i + satirArttirimi, 22] = dataGridView1.Rows[i].Cells["TaxNo"].Value.ToString();
+
+                  //  if (dataGridView1.Rows[i].Cells["TaxReg"].Value.ToString() == null) { excelWorksheet.Cells[i + satirArttirimi, 21] = "_"; }
+                   // else excelWorksheet.Cells[i + satirArttirimi, 23] = dataGridView1.Rows[i].Cells["TaxReg"].Value.ToString();
+
+                  // //if (dataGridView1.Rows[i].Cells["CompanyPlate"].Value.ToString() == null) { excelWorksheet.Cells[i + satirArttirimi, 22] = "_"; }
+                    //else excelWorksheet.Cells[i + satirArttirimi, 24] = dataGridView1.Rows[i].Cells["CompanyPlate"].Value.ToString();
+
+                    //if (dataGridView1.Rows[i].Cells["Abone"].Value.ToString() == null) { excelWorksheet.Cells[i + satirArttirimi, 22] = "_"; }
+                    //else excelWorksheet.Cells[i + satirArttirimi, 22] = dataGridView1.Rows[i].Cells["Plaka"].Value.ToString();
+
+                   // if (dataGridView1.Rows[i].Cells[""].Value.ToString() == null) { excelWorksheet.Cells[i + satirArttirimi, 20] = "_"; }
+                    //else excelWorksheet.Cells[i + satirArttirimi, 20] = dataGridView1.Rows[i].Cells[""].Value.ToString();
+
+
+                    //excelWorksheet.Cells[i + satirArttirimi, 15] = dataGridView1.Rows[i].Cells[""].Value.ToString();
+                    //excelWorksheet.Cells[i + satirArttirimi, 16] = dataGridView1.Rows[i].Cells[""].Value.ToString();
+                
+                 
+                   if (dataGridView1.Rows[i].Cells["SalesMethodNet"].Value.ToString()=="KREDİ KARTI")
+                    {
+                        kredikarti = kredikarti + Convert.ToDecimal(dataGridView1.Rows[i].Cells["TRevenue"].Value);
+                    }
+                    if (dataGridView1.Rows[i].Cells["SalesMethodNet"].Value.ToString() == "NAKİT")
+                    {
+                        Tnakit = Tnakit + Convert.ToDecimal(dataGridView1.Rows[i].Cells["TRevenue"].Value);
+                    }
+                    if (dataGridView1.Rows[i].Cells["InvoiceStatus"].Value.ToString() == "FATURA")
+                    {
+                        Tfatura = Tfatura + Convert.ToDecimal(dataGridView1.Rows[i].Cells["TRevenue"].Value);
+                    }
+                    if (dataGridView1.Rows[i].Cells["InvoiceStatus"].Value.ToString() == "FİŞ")
+                    {
+                        Tfis = Tfis + Convert.ToDecimal(dataGridView1.Rows[i].Cells["TRevenue"].Value);
+                    }
+
+                    if (dataGridView1.Rows[i].Cells["SalesMethodNet"].Value.ToString() == "CARİ")
+                    {
+                        TCari = TCari + Convert.ToDecimal(dataGridView1.Rows[i].Cells["TRevenue"].Value);
+                    }
+
+                    if (dataGridView1.Rows[i].Cells["SalesMethodNet"].Value.ToString() == "EFT")
+                    {
+                        TEft = TEft + Convert.ToDecimal(dataGridView1.Rows[i].Cells["TRevenue"].Value);
+                    }
+
+
+
+
+                    geneltoplam =geneltoplam+ Convert.ToDecimal(dataGridView1.Rows[i].Cells["TRevenue"].Value);
+
+                }
+
+
+
+
+
+                int rowcountsakla = dataGridView1.RowCount;
+                baglanti.Open();
+                SqlDataAdapter da = new SqlDataAdapter("Select Carpark OTOPARK,Article as TANIM,COUNT(Article) as ADET from Sales where StartDate>='" + dateTimePicker2.Value.ToString("yyyy-MM-dd") + "' and StartDate<= '" + dateTimePicker3.Value.ToString("yyyy-MM-dd") + "'  GROUP BY Carpark,Article", baglanti);
+                DataTable datatableListe = new DataTable();
+                da.Fill(datatableListe);
+                dataGridView1.DataSource = datatableListe;
+                baglanti.Close();
+
+                //MessageBox.Show(Convert.ToString());
+
+
+                satirArttirimi = 5;
+
+                for (int i = 0; i < dataGridView1.RowCount; i++)
+                {
+
+                    excelWorksheet.Cells[i + satirArttirimi, 27] = dataGridView1.Rows[i].Cells["OTOPARK"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 28] = dataGridView1.Rows[i].Cells["TANIM"].Value.ToString();
+                    excelWorksheet.Cells[i + satirArttirimi, 29] = Convert.ToInt32(dataGridView1.Rows[i].Cells["ADET"].Value);
+                }
+
+
+                // MessageBox.Show(Convert.ToString(GunCongress15));
+
+
+                excelWorksheet.Cells[4, 25] = geneltoplam;
+                excelWorksheet.Cells[5, 25] = Tnakit;
+                excelWorksheet.Cells[6, 25] = kredikarti;
+                excelWorksheet.Cells[7, 25] = Tfatura;
+                excelWorksheet.Cells[8, 25] = Tfis;
+                excelWorksheet.Cells[9, 25] = TCari;
+                excelWorksheet.Cells[10, 25] = TEft;
+
+                satirArttirimi = 4;
+                excelCellrange = excelWorksheet.Range[excelWorksheet.Cells[satirArttirimi, 1], excelWorksheet.Cells[rowcountsakla + satirArttirimi, 23]];
+                Microsoft.Office.Interop.Excel.Borders excelBorders = excelCellrange.Borders;
+                excelBorders.LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous;
+                excelBorders.Weight = 2d;
+
+                //excelCellrange.Columns.AutoFit();
+                excelWorksheet.Columns.AutoFit();
+                dataGridView1.DataSource = null;
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Title = "Kaydedilecek Yolu Seçiniz..";
+                saveDialog.Filter = "Excel Dosyası|*.xlsx";
+                saveDialog.FileName = "AboneDetayRaporu_" + dateTimePicker2.Value.Date.ToString("yyyy-MM-dd") + "__" + dateTimePicker3.Value.Date.ToString("yyyy-MM-dd");
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    excelWorksheet.SaveAs(saveDialog.FileName);
+
+                    MessageBox.Show("Rapor Excel Formatında Kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                excelWorkbook.Close();
+                excel.Quit();
+                this.Cursor = Cursors.Default;
+
+
+
+
+
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+    }
+}

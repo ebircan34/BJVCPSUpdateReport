@@ -1,0 +1,13 @@
+labelVardiyaSaati
+labelVardiyaNo
+labelPersonel
+labelBasTar
+
+labelNakit
+labelKrediKarti
+labelHavaleEft
+labelCari
+labelToplamCiro
+
+opentime 4
+ 

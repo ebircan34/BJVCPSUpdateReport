@@ -1,0 +1,152 @@
+
+            else
+            {
+                DateTime Dt1, Dt2;
+                dataGridView1.Rows.Clear();
+                int satirsayisi;
+                int i = 0; int z = 0;
+                String StringDt1, StringDt2;
+                StringDt1 = dateTimePicker1.Value.ToString("yyyy-MM-dd");
+                Dt1 = Convert.ToDateTime(StringDt1);
+                StringDt2 = dateTimePicker2.Value.ToString("yyyy-MM-dd");
+                Dt2 = Convert.ToDateTime(StringDt2);
+
+
+                var bireysel = (from px in db.Gelirler
+                                join fx in db.GercekMusteriler
+                                on px.MusteriId equals fx.MusteriId
+                                where px.BaslangicTarihi >= Dt1 & px.BaslangicTarihi <= Dt2
+                                select new
+                                {
+                                    MusteriUnvani = fx.AdSoyad,
+                                    Toplam = px.GenelToplam,
+                                    _araToplam = px.AraToplam,
+                                    _keyKartGeliri = px.KeyKartGeliri,
+                                    _plaka = fx.PlakaNo,
+                                    _aratoplam = px.AraToplam,
+                                    _tanim = px.Tanim,
+                                    _sure = px.Sure,
+                                    _birimFiyati = px.SatisGeliri,
+                                    _veriTasiyici = px.VeriTasiyici,
+                                    _invoice = px.InvoiceStatus,
+                                    _basTar = px.BaslangicTarihi,
+                                    _bitTar = px.BaslangicTarihi,
+                                    _odemeYontemi = px.OdemeYontemi,
+                                    _status = px.Status,
+                                    _personel = px.Personel,
+                                    _odemeKasasi = px.OdemeKasasi,
+                                    _odYonDetayi = px.OdemeYontemiNet,
+
+                                }).ToList();
+                satirsayisi = bireysel.Count;
+
+
+
+                i = 0;
+                z = 1;
+
+
+                bireysel.ForEach(x =>
+                 {
+
+
+                     dataGridView1.Rows.Add();
+                     dataGridView1.Rows[i].Cells["SiraNo"].Value = z.ToString();
+                     dataGridView1.Rows[i].Cells["Plaka"].Value = x._plaka.ToString();
+                     dataGridView1.Rows[i].Cells["AdSoyadUnvan"].Value = x.MusteriUnvani;
+                     dataGridView1.Rows[i].Cells["Tanim"].Value = x._tanim.ToString();
+                     dataGridView1.Rows[i].Cells["SatisGeliri"].Value = x._birimFiyati.ToString();
+                     dataGridView1.Rows[i].Cells["Sure"].Value = x._sure.ToString();
+                     dataGridView1.Rows[i].Cells["KeyKart"].Value = x._keyKartGeliri.ToString();
+                     dataGridView1.Rows[i].Cells["AraToplam"].Value = x._aratoplam.ToString();
+                     dataGridView1.Rows[i].Cells["GenelToplam"].Value = x.Toplam;
+                     dataGridView1.Rows[i].Cells["InvoiceStatus"].Value = x._invoice.ToString();
+                     dataGridView1.Rows[i].Cells["BaslangicTarihi"].Value = x._basTar.ToString();
+                     dataGridView1.Rows[i].Cells["BitisTarihi"].Value = x._bitTar.ToString();
+                     dataGridView1.Rows[i].Cells["OdemeYontemi"].Value = x._odemeYontemi.ToString();
+                     dataGridView1.Rows[i].Cells["Status"].Value = x._status.ToString();
+                     dataGridView1.Rows[i].Cells["VeriTasiyici"].Value = x._veriTasiyici.ToString();
+                     dataGridView1.Rows[i].Cells["Personel"].Value = x._personel.ToString();
+                     dataGridView1.Rows[i].Cells["OdemeKasasi"].Value = x._odemeKasasi.ToString();
+                     dataGridView1.Rows[i].Cells["OdemeYontemiDetayi"].Value = x._odYonDetayi.ToString();
+                     dataGridView1.Rows[i].Cells["VergiDairesi"].Value = "";
+                     dataGridView1.Rows[i].Cells["Ilce"].Value = "";
+                     dataGridView1.Rows[i].Cells["Sehir"].Value = "";
+
+
+
+                     z = z + 1;
+                     i = i + 1;
+                 });
+
+
+
+
+                var firmalar = (from px in db.Gelirler
+                                join fx in db.TuzelMusteriler
+                                on px.MusteriId equals fx.MusteriId
+                                where px.Vardiya == comboBoxVardiya.Text & px.BaslangicTarihi >= Dt1 & px.BaslangicTarihi <= Dt2
+                                select new
+                                {
+                                    MusteriUnvani = fx.Unvan,
+                                    Toplam = px.GenelToplam,
+                                    _araToplam = px.AraToplam,
+                                    _keyKartGeliri = px.KeyKartGeliri,
+                                    _plaka = fx.PlakaNo,
+                                    _aratoplam = px.AraToplam,
+                                    _tanim = px.Tanim,
+                                    _sure = px.Sure,
+                                    _birimFiyati = px.SatisGeliri,
+                                    _veriTasiyici = px.VeriTasiyici,
+                                    _invoice = px.InvoiceStatus,
+                                    _basTar = px.BaslangicTarihi,
+                                    _bitTar = px.BaslangicTarihi,
+                                    _odemeYontemi = px.OdemeYontemi,
+                                    _status = px.Status,
+                                    _personel = px.Personel,
+                                    _odemeKasasi = px.OdemeKasasi,
+                                    _odYonDetayi = px.OdemeYontemiNet,
+                                    _vergiDairesi = fx.VergiDairesi,
+                                    _il = fx.il,
+                                    _ilce = fx.ilce,
+
+                                }).ToList();
+                satirsayisi = firmalar.Count;
+
+
+
+                // i = 0;
+                //z = 1;
+
+                firmalar.ForEach(x =>
+                {
+
+
+                    dataGridView1.Rows.Add();
+                    dataGridView1.Rows[i].Cells["SiraNo"].Value = z.ToString();
+                    dataGridView1.Rows[i].Cells["Plaka"].Value = x._plaka.ToString();
+                    dataGridView1.Rows[i].Cells["AdSoyadUnvan"].Value = x.MusteriUnvani;
+                    dataGridView1.Rows[i].Cells["Tanim"].Value = x._tanim.ToString();
+                    dataGridView1.Rows[i].Cells["SatisGeliri"].Value = x._birimFiyati.ToString();
+                    dataGridView1.Rows[i].Cells["Sure"].Value = x._sure.ToString();
+                    dataGridView1.Rows[i].Cells["KeyKart"].Value = x._keyKartGeliri.ToString();
+                    dataGridView1.Rows[i].Cells["AraToplam"].Value = x._aratoplam.ToString();
+                    dataGridView1.Rows[i].Cells["GenelToplam"].Value = x.Toplam;
+                    dataGridView1.Rows[i].Cells["InvoiceStatus"].Value = x._invoice.ToString();
+                    dataGridView1.Rows[i].Cells["BaslangicTarihi"].Value = x._basTar.ToString();
+                    dataGridView1.Rows[i].Cells["BitisTarihi"].Value = x._bitTar.ToString();
+                    dataGridView1.Rows[i].Cells["OdemeYontemi"].Value = x._odemeYontemi.ToString();
+                    dataGridView1.Rows[i].Cells["Status"].Value = x._status.ToString();
+                    dataGridView1.Rows[i].Cells["VeriTasiyici"].Value = x._veriTasiyici.ToString();
+                    dataGridView1.Rows[i].Cells["Personel"].Value = x._personel.ToString();
+                    dataGridView1.Rows[i].Cells["OdemeKasasi"].Value = x._odemeKasasi.ToString();
+                    dataGridView1.Rows[i].Cells["OdemeYontemiDetayi"].Value = x._odYonDetayi.ToString();
+                    dataGridView1.Rows[i].Cells["VergiDairesi"].Value = x._vergiDairesi;
+                    dataGridView1.Rows[i].Cells["Ilce"].Value = x._ilce;
+                    dataGridView1.Rows[i].Cells["Sehir"].Value = x._il;
+
+
+
+                    z = z + 1;
+                    i = i + 1;
+                });

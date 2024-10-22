@@ -1,0 +1,8 @@
+
+git init // git için çalışılabilir klasör olarak ata
+git status // git için son güncel durumu gösterir
+git add . tüm değişiklikleri kabul et
+git commit -am "Mesajı Yaz"
+git push origin master
+git pull origin master
+

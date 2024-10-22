@@ -1,0 +1,11 @@
+INSERT INTO iHGenelHasilat Tarih,Personel,Otopark,IcMrkzOAdet,IcMrkzOGelir,IcAboneOAboneAdet,IcAboneOAboneGelir,IcAboneOCongAdet,IcAboneOCongGelir,IcCks2OAdet,IcCks2OGelir,RentCarMbCongAdet,RentCarMbCongGelir,RentCarMbAboneAdet,
+RentCarMbAboneGelir,IhNakitFaturaAdet,IhNakitFatuıraGelir,IhKrediKartiFaturaAdet,IhKrediKartiFaturaGelir,IhEFTFaturaAdet,IhEFTFaturaGelir,KsbKrediKartiAdet,KsbKrediKartiGelir,AboneKrediKartiAdet,AboneKrediKartiGelir,GenelToplamAdet
+GenelToplam,AboneHariciGelirAd,AboneHariciGelir 
+VALUES
+@Tarih,@Personel,@Otopark,@IcMrkzOAdet,@IcMrkzOGelir,@IcAboneOAboneAdet,@IcAboneOAboneGelir,@IcAboneOCongAdet,@IcAboneOCongGelir,@IcCks2OAdet,@IcCks2OGelir,@RentCarMbCongAdet,@RentCarMbCongGelir,@RentCarMbAboneAdet,
+@RentCarMbAboneGelir,@IhNakitFaturaAdet,@IhNakitFatuıraGelir,@IhKrediKartiFaturaAdet,@IhKrediKartiFaturaGelir,@IhEFTFaturaAdet,@IhEFTFaturaGelir,@KsbKrediKartiAdet,@KsbKrediKartiGelir,@AboneKrediKartiAdet,@AboneKrediKartiGelir,@GenelToplamAdet
+@GenelToplam,@AboneHariciGelirAd,@AboneHariciGelir
+
+
+
+ string sql = "INSERT INTO iHGenelHasilat (Tarih,Personel,Otopark) VALUES (@Tarih,@Personel,@Otopark)";

@@ -1,0 +1,925 @@
+------------------------------------------------------- tek sonuç döndüren sql 
+baglanti.Open();
+SqlCommand cmdtumkayitlarisay = new SqlCommand("SELECT count(*) FROM Sales where StartDate Between '" + sqlFormattedDateStart + "' and '" + sqlFormattedDateEnd + "' and Shift='" + comboBoxShift.Text + "' ", baglanti);
+SqlDataReader dr6 = cmdtumkayitlarisay.ExecuteReader();
+while (dr6.Read())
+{
+    if (dr6[0].ToString() == string.Empty)
+    {
+        TLpara = 0;
+        textBoxisladet.Text = Convert.ToString(TLpara);
+        //textBoxcongreess.Text = string.Format("{0:c}", decimal.Parse(textBoxcongreess.Text));
+    }
+    else
+    {
+
+        textBoxisladet.Text = dr6[0].ToString();
+        //TLpara = Convert.ToDouble(textBoxisladet.Text);
+        //textBoxcongreess.Text = string.Format("{0:c}", decimal.Parse(textBoxcongreess.Text));
+    }
+}
+dr6.Close();
+baglanti.Close();
+
+--------------------------------------------------------------------------------dosyayý oku
+
+comboBoxCarpark.Items.Clear();
+string[] lineOfContents = File.ReadAllLines(@"data\Carpark.dat");
+foreach (var line in lineOfContents)
+{
+    string[] tokens = line.Split(',');
+    // get the 2nd element (the 1st item is always item 0)
+    comboBoxCarpark.Items.Add(tokens[0]);
+}
+
+-----------------------------------DataTable
+string sql = "SELECT Srg.TARIH, LTRIM(RTRIM(Srg.OTOPARK)) As OTOPARK, LTRIM(RTRIM(Srg.TANIM)) As TANIM, srg.ADET, srg.TOPLAM, LTRIM(RTRIM(Srg.ODEME_YONTEMI)) As ODEME_YONTEMI, LTRIM(RTRIM(Srg.NET)) As NET From (SELECT StartDate AS TARIH, Carpark as OTOPARK, Article as TANIM, COUNT(Article) AS ADET, SUM(TRevenue) as TOPLAM, SalesMethod as ODEME_YONTEMI, SalesMethodNet as NET from Sales where StartDate BETWEEN '" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd") + "' AND '" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd") + "' Group by StartDate, Carpark, Article, SalesMethod, SalesMethodNet UNION ALL SELECT CariTarih AS TARIH, Ext4 as OTOPARK, CariTanim as TANIM, COUNT(CariTanim) as ADET, SUM(CariToplam) as TOPLAM, Ext3 as ODEME_YONTEMI, Ext3 as NET from CariGelir where CariTarih BETWEEN '" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd") + "' AND '" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd") + "' Group by CariTarih, Ext4, CariTanim, Ext3, Ext3 UNION ALL SELECT Tarih AS TARIH, Otopark as OTOPARK, GelirYontemi as TANIM, COUNT(GelirYontemi) as ADET, SUM(Tutar) as TOPLAM, Ext4 as ODEME_YONTEMI, Ext2 as NET from ZorunluBiletGeliri where Tarih BETWEEN '" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd") + "' AND '" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd") + "' Group by Tarih, Otopark, GelirYontemi, Ext4, Ext2 UNION ALL SELECT Tarih AS TARIH, Otopark as OTOPARK, Tanim as TANIM, COUNT(Tanim) as ADET, SUM(Toplam) as TOPLAM, OdemeYontemNet as ODEME_YONTEMI, OdemeYontem as NET from SkidataKsbGeliri where Tarih BETWEEN '" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd") + "' AND '" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd") + "' Group by Tarih, Otopark, Tanim, OdemeYontemNet, OdemeYontem) As Srg";
+
+SqlCommand cmd = new SqlCommand(sql, baglanti);
+SqlDataAdapter da = new SqlDataAdapter();
+da.SelectCommand = cmd;
+DataTable dt = new DataTable();
+da.Fill(dt);
+dataGridViewDR.DataSource = dt;
+baglanti.Close();
+dataGridViewDR.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+//listView1.Items["OTOPARK"].SubItems[0].Text = "IC HAT OTOPARK";
+------------------------------------------------------------------------------------------connection string
+private void DB_Connect_DR()
+{
+    StreamReader oku = new StreamReader(@"data\Connection_DB.dat");
+    connetionString = oku.ReadLine();
+    baglanti = new SqlConnection(connetionString);
+    baglanti.Open();
+    //MessageBox.Show("Connection Open  !");
+    baglanti.Close();
+}
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------------- combobox.item	 
+int RC = 0;
+            RC= comboBoxOGCOOtopark.Items.Count;
+            //MessageBox.Show(Convert.ToString(RC));
+            int biletlicikisadeti = 0;
+            int datareaderdangelen = 0;
+            for (int i = 0; i < RC; i++)
+            {
+                ;
+                string cps = comboBoxOGCOOtopark.Items[i].ToString();
+               // MessageBox.Show(cps);
+               baglanti.Open();
+               SqlCommand sqlCommand = new SqlCommand("Select Sum(Ext1) From OtoparkGirisCikisSayisi Where Tarih ='" + dateTimePickerAracSayisi.Value.ToShortDateString() + "' and  Otopark='" + cps + "'", baglanti);
+               SqlDataReader dr = sqlCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    if (dr[0].ToString() == string.Empty)
+                    {
+                        //MessageBox.Show("Seçmiþ Olduðunuz Tarihe Ait Toplam Biletli Çýkýþ Verisi Bulunamadý");
+                       // txtBiletliCikisToplam.Text = "0";
+                        datareaderdangelen = 0;
+
+                    }
+                    else
+                    {
+                        MessageBox.Show(dr[0].ToString());
+                        datareaderdangelen = int.Parse(dr[0].ToString());   
+                   
+
+                    }
+                    biletlicikisadeti = biletlicikisadeti + datareaderdangelen;
+
+                }
+                             
+                              
+                baglanti.Close();
+------------------------------------------------------------------------------------------
+dataGridViewDR.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+
+---------------------------------------------------------------------------
+Tarihi Saatten ayýr. Ve Sql Anlayacaðý þekilde yyyy.MM.dd
+
+myVardiyaStart = dateTimePicker1Dasboard.Value.Date;
+myVardiyaEnd = dateTimePicker1DasboardEnd.Value.Date;
+sqlFormattedDateStart = myVardiyaStart.ToString("yyyy-MM-dd");
+sqlFormattedDateEnd =   myVardiyaEnd.ToString("yyyy-MM-dd");
+
+"SELECT SUM(TRevenue) FROM Sales where StartDate Between '"+ sqlFormattedDateStart + "' and '"+ sqlFormattedDateEnd + "'
+
+
+
+----------------------------------------------------------  
+
+Yeni Nesil Tarihe göre Listele
+private void dasboardListele()
+{
+    baglanti.Open();
+    DateTime zaman = dateTimePickerBasTar.Value.Date;
+    //MessageBox.Show(dateTimePickerBasTar.Value.ToString());
+    //trx
+
+    //var zaman = dateTimePickerBasTar.Value.ToShortDateString();
+    //zaman.
+
+    //MessageBox.Show(zaman);
+    
+    string format = "YYYY-MM-dd";
+    var zamanim = zaman.ToString(format);
+    DateTime myDateTime= dateTimePicker2.Value.Date;
+    string sqlFormattedDate = myDateTime.ToString("yyyy-MM-dd");
+
+
+    SqlDataAdapter da = new SqlDataAdapter("Select * From Sales where StartDate='"+ sqlFormattedDate + "' ", baglanti);
+    DataTable datatableListe = new DataTable();
+    da.Fill(datatableListe);
+    dataGridViewDasboard.DataSource = datatableListe;
+    baglanti.Close();
+
+}
+
+
+
+
+--------------------------------------------------------
+Eþitlik þartýna göre combobox doldur
+
+private void article_selection_control()
+{
+    baglanti.Open();
+    SqlCommand cmd = new SqlCommand("Select * from Article", baglanti);
+    SqlDataReader drarticle = cmd.ExecuteReader();
+
+    while (drarticle.Read())
+    {
+        if (comboBoxArticle.Text == drarticle[1].ToString())
+        {
+            dateTimePickerBasTar.Value = DateTime.Today;
+            textBoxRevenue.Text = drarticle[2].ToString();
+            timerr_Count = Convert.ToInt32(drarticle[4]);
+            article_suresi = drarticle[4].ToString();
+            DateTime date = DateTime.Now;
+            date = date.AddMonths(timerr_Count); // Adds days to the date
+            dateTimePickerBtTar.Value = Convert.ToDateTime(date);
+            Abonelik_Suresi = Convert.ToString(1);
+        }
+    }
+    textBoxOdemeTutari.Text = Convert.ToString(textBoxRevenue.Text);
+    
+    textBoxAraToplam.Text = Convert.ToString(0);
+    baglanti.Close();
+}
+
+
+--------------------------------------------------------
+Para giriþleri için ideal kullaným. virgün yazýlabilir. diðer özel karakterler yazýlýlmaz. harf yazýlmaz.Rakam yazýlýr
+keyPressKullanýlýr
+
+            if (char.IsNumber(e.KeyChar) || e.KeyChar == 8 || e.KeyChar == 44)
+            { e.Handled = false; }
+            else { e.Handled = true; }
+-------------------------------------------------------------------
+
+text changet harf giriþini engeller
+if (System.Text.RegularExpressions.Regex.IsMatch(textBoxKsbNakit.Text, "[^0-9]"))
+{
+    MessageBox.Show("Harf Giriþi Kabul Edilmez");
+    textBoxKsbNakit.Text = textBoxKsbNakit.Text.Remove(textBoxKsbNakit.Text.Length - 1);
+}
+-------------------------------------------------
+Para için kullanýlabilir ondalikli yazim.
+
+ private void textBoxKsbKKarti_Leave(object sender, EventArgs e)
+ {
+     double para;
+     if (textBoxKsbKKarti.Text == string.Empty) { }
+     else
+     {
+         para = double.Parse(textBoxKsbNakit.Text);
+         textBoxKsbNakit.Text = para.ToString("N");
+         //ondalýk basamaklara ayýrýr ve virgðülden sonra iki basamak gösterir.
+         //virgülden sonra iki basamaða baðlý kalmayabilirsiniz. N'in yanýna eklediðiniz sayý kadar virgül gösterebilirsiniz.
+         //mesela N1 bir virgül, N4 dört virgül gösterir.
+         // Ayrýca sayýnýn para biriminin(TL) gösterilmesini isterseniz N yerine C kullanabilirsiniz.
+     }
+ }
+
+
+
+
+----------------------------------
+try
+{
+ 
+double para = Convert.ToDouble(textBoxKsbNakit.Text);
+string formatliTL = string.Format("{0:C}", para);
+textBoxKsbNakit.Text = formatliTL;
+
+   
+}
+catch (Exception)
+{
+}
+
+
+------------------------------------------------------
+
+
+
+------------------------------------------------------
+Enter Tuþ ile bir sonraki text box geçmek
+
+if(e.KeyCode == Keys.Enter)
+{
+    textBoxemail.Focus();
+}
+
+---------------------------------------------------
+tüm textbox clear
+void ClearAllText(Control con)
+{
+    foreach (Control c in con.Controls)
+    {
+        if (c is TextBox)
+            ((TextBox)c).Clear();
+        else
+            ClearAllText(c);
+    }
+}
+
+kullanýmý ClearAllText(this);
+
+----------------------------------------------
+
+Combobox Dosyadan Veri Çekme
+string[] lineOfContents = File.ReadAllLines(@"C:\Users\1\Desktop\2.txt");
+foreach (var line in lineOfContents)
+{
+    string[] tokens = line.Split(',');
+    // get the 2nd element (the 1st item is always item 0)
+    comboBox1.Items.Add(tokens[1]);
+}
+
+Combobox Doldur
+....................................
+comboBoxArticle.Items.Clear();
+baglanti.Open();
+SqlCommand cmd = new SqlCommand("Select * from Validasyon", baglanti);
+SqlDataReader dr_validasyon = cmd.ExecuteReader();
+
+while (dr_validasyon.Read())
+{
+    comboBoxArticle.Items.Add(dr_validasyon["Validasyon"]);
+
+}
+baglanti.Close();
+dr_validasyon.Close();
+
+
+
+
+
+
+
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+tus girisini engelleme e.Handled = true;
+---------------------------
+DataGridview Text Veri Çekme
+---------------------------
+textBoxManuelID.Text= dataGridViewManuelList.CurrentRow.Cells[0].Value.ToString();
+--------------------------
+
+
+
+Arama Sonuçlarýný DataGridViewGosterme
+ baglanti.Open();
+ tablolisteyap.Clear();
+ SqlDataAdapter adtr = new SqlDataAdapter("Select * from Sales where StartDate>='" + dateTimeArama1.Value.ToLongDateString() + "'", baglanti);
+ adtr.Fill(tablolisteyap);
+ dataGridViewDasboard.DataSource = tablolisteyap;
+ baglanti.Close()
+----------------------------------------------------
+
+
+
+
+-------------------------------------------------
+KEY Press Sadece özel karakter engelleme
+
+if (e.KeyChar == '£' || e.KeyChar == '½' ||
+    e.KeyChar == '€' || e.KeyChar == '?' ||
+    e.KeyChar == '¨' || e.KeyChar == 'æ' ||
+    e.KeyChar == 'ß' || e.KeyChar == '´')
+{
+    e.Handled = true;
+}
+if ((int)e.KeyChar >= 33 && (int)e.KeyChar <= 47)
+{
+    e.Handled = true;
+}
+if ((int)e.KeyChar >= 58 && (int)e.KeyChar <= 64)
+{
+    e.Handled = true;
+}
+if ((int)e.KeyChar >= 91 && (int)e.KeyChar <= 96)
+{
+    e.Handled = true;
+}
+if ((int)e.KeyChar >= 123 && (int)e.KeyChar <= 127)
+{
+    e.Handled = true;
+}
+------------------------------------------------
+Combobox Dosyadan Veri Çekme
+
+string[] lineOfContents = File.ReadAllLines(@"Manueltxt");
+foreach (var line in lineOfContents)
+{
+    string[] tokens = line.Split(',');
+    // get the 2nd element (the 1st item is always item 0)
+    comboBox1.Items.Add(tokens[1]);
+}
+-------------------------------------------------
+
+
+
+KEY PREESS /özel karakter ve rakam engeller ve sadece harf yazar
+
+
+ e.Handled = !char.IsLetter(e.KeyChar) && !char.IsControl(e.KeyChar) && !char.IsSeparator(e.KeyChar);
+
+ if ((int)e.KeyChar >= 33 && (int)e.KeyChar <= 47)
+ {
+     e.Handled = true;
+ }
+ if ((int)e.KeyChar >= 58 && (int)e.KeyChar <= 64)
+ {
+     e.Handled = true;
+ }
+ if ((int)e.KeyChar >= 91 && (int)e.KeyChar <= 96)
+ {
+     e.Handled = true;
+ }
+ if ((int)e.KeyChar >= 123 && (int)e.KeyChar <= 127)
+ {
+     e.Handled = true;
+ }
+----------------------------------------
+TEXCHANGED / Sadece Büyük Harf
+txtCariilce.Text = txtCariilce.Text.ToUpper();
+txtCariilce.SelectionStart = txtCariilce.Text.Length;
+----------------------------------------------
+TL para formatý
+double Revenuetxt = Convert.ToDouble(txtRevenue.Text);
+string formatliTL = string.Format("{0:C}", Revenuetxt);
+txtRevenue.Text = formatliTL;
+-------------------------------------------------------
+KEY PRESS // sadece rakam
+e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar);
+----------------------------------------------------------
+SqlCommand komut = new SqlCommand("insert into RevenueSales " +
+    "(PhoneNumber," +
+    "NameSurName," +
+    "PlateNo," +
+    "RevenueMethod," +
+    "Article," +
+    "ProcessTime," +
+    "Revenue," +
+    "SDShift," +
+    "SDCarpark," +
+    "RevenueMethodNet," +
+    "KeyKartSalesRevenue," +
+    "SDPersonel," +
+    "SDemail," +
+    "TotalRevenue," +
+    "DataCarrier," +
+    "AbonelikSuresi," +
+    "BarkodKeyKartNo," +
+    "GrossRevenue," +
+    "StartDate," +
+    "EndDate," +
+    "AbonelikDurumu," +
+    "CompanyName," +
+    "CompanyPhone," +
+    "CompanyTaxNo," +
+    "CompanyTaxReg," +
+    "FirmaBilgisi," +
+    "FirmaSehir," +
+    "Firmailce) " +
+    "values " +
+    "(@PhoneNumber, " +
+    "@NameSurName, " +
+    "@PlateNo," +
+    "@RevenueMethod," +
+    "@Article," +
+    "@ProcessTime," +
+    "@Revenue," +
+    "@SDShift," +
+    "@SDCarpark," +
+    "@RevenueMethodNet," +
+    "@KeyKartSalesRevenue," +
+    "@SDPersonel," +
+    "@SDemail," +
+    "@TotalRevenue," +
+    "@DataCarrier," +
+    "@AbonelikSuresi," +
+    "@BarkodKeyKartNo," +
+    "@GrossRevenue," +
+    "@StartDate," +
+    "@EndDate," +
+    "@AbonelikDurumu," +
+    "@CompanyName," +
+    "@CompanyPhone," +
+    "@CompanyTaxNo," +
+    "@CompanyTaxReg," +
+    "@FirmaBilgisi," +
+    "@FirmaSehir," +
+    "@Firmailce)", baglanti);
+komut.Parameters.AddWithValue("@PhoneNumber", txtPhoneNo.Text);
+komut.Parameters.AddWithValue("@NameSurName", txtAdSoyad.Text);
+komut.Parameters.AddWithValue("@PlateNo", txtPlakano.Text);
+komut.Parameters.AddWithValue("@RevenueMethod", odemeyontemi);
+komut.Parameters.AddWithValue("@Article", Combo_Tanim.Text);
+komut.Parameters.AddWithValue("@ProcessTime", Convert.ToString(DateTime.Now.ToLongTimeString()));
+komut.Parameters.AddWithValue("@Revenue", Convert.ToDouble(txtRevenue.Text));
+komut.Parameters.AddWithValue("@SDShift", comboBoxVardiya.Text);
+komut.Parameters.AddWithValue("@SDCarpark", comboBoxCarpark.Text);
+komut.Parameters.AddWithValue("@RevenueMethodNet", revenuemothotnet1);
+if (CONGRESS.Checked == true)
+{
+    MessageBox.Show("Congress Seçili");
+    keykartucreti = 0;
+}
+komut.Parameters.AddWithValue("@KeyKartSalesRevenue", keykartucreti);
+komut.Parameters.AddWithValue("@SDPersonel", comboBoxPersonel.Text);
+komut.Parameters.AddWithValue("@SDemail", txtemail.Text);
+komut.Parameters.AddWithValue("@TotalReveNue", Convert.ToDouble(txtOdemeTutari.Text));
+komut.Parameters.AddWithValue("@DataCarrier", ddataCarrier);
+komut.Parameters.AddWithValue("@AbonelikSuresi", Abonelik_Suresi);
+komut.Parameters.AddWithValue("@BarkodKeyKartNo", txtBarkodKeyKart.Text);
+komut.Parameters.AddWithValue("@GrossRevenue", groosrevenue);
+komut.Parameters.AddWithValue("@StartDate", dateTimeBaslangic.Value.ToString("d"));
+komut.Parameters.AddWithValue("@EndDate", dateTimeBitis.Value.ToString("d"));
+komut.Parameters.AddWithValue("@AbonelikDurumu", congressabonedurumu);
+
+if (checkBoxFatura.Checked == true)
+{
+    //MessageBox.Show("Adres Karýþtý");
+    komut.Parameters.AddWithValue("@CompanyName", txtFirmaSahis.Text);
+    komut.Parameters.AddWithValue("@CompanyPhone", maskedTextBoxFirmaTelefon.Text);
+    komut.Parameters.AddWithValue("@CompanyTaxNo", txtVergiNo.Text);
+    komut.Parameters.AddWithValue("@CompanyTaxReg", txtVergiDairesi.Text);
+    komut.Parameters.AddWithValue("@FirmaBilgisi", firmadurumu);
+    komut.Parameters.AddWithValue("@FirmaSehir", txtSehir.Text);
+    komut.Parameters.AddWithValue("@Firmailce", txtilce.Text);
+}
+
+if (checkBoxFatura.Checked == false)
+{
+    komut.Parameters.AddWithValue("@CompanyName", txtFirmaSahis.Text);
+    komut.Parameters.AddWithValue("@CompanyPhone", maskedTextBoxFirmaTelefon.Text);
+    komut.Parameters.AddWithValue("@CompanyTaxNo", txtVergiNo.Text);
+    komut.Parameters.AddWithValue("@CompanyTaxReg", txtVergiDairesi.Text);
+    komut.Parameters.AddWithValue("@FirmaBilgisi", firmadurumu);
+    komut.Parameters.AddWithValue("@FirmaSehir", txtSehir.Text);
+    komut.Parameters.AddWithValue("@Firmailce", txtilce.Text);
+}
+
+komut.ExecuteNonQuery();
+MessageBox.Show("Satýþ Verisi Kaydý Tamamlandý.");
+baglanti.Close();
+
+
+-------------------------------------------------------------------------------
+
+int secilen = dataGridView1.SelectedCells[0].RowIndex;
+txtID.Text = dataGridView1.Rows[secilen].Cells[0].Value.ToString();
+txtAd.Text = dataGridView1.Rows[secilen].Cells[1].Value.ToString();
+txtSoyad.Text = dataGridView1.Rows[secilen].Cells[2].Value.ToString();
+cmbSehir.Text = dataGridView1.Rows[secilen].Cells[3].Value.ToString();
+mskMaas.Text = dataGridView1.Rows[secilen].Cells[4].Value.ToString();
+perdurum = dataGridView1.Rows[secilen].Cells[5].Value.ToString();
+if (perdurum == "True")
+{
+    radioButton1.Checked = true; radioButton2.Checked = false;
+}
+else
+{
+    radioButton1.Checked = false; radioButton2.Checked = true;
+}
+
+
+
+txtMeslek.Text = dataGridView1.Rows[secilen].Cells[6].Value.ToString();
+--------------------------------------------------------------------------
+
+Kayit Güncelleme
+
+ SqlCommand komutguncelle = new SqlCommand("update Tbl_Personel Set PerAd = @PerAd,PerSoyad=@PerSoyad,PerSehir=@PerSehir,PerMaas=@PerMaas," +
+     " PerDurum=@PerDurum,PerMeslek=@PerMeslek where Perid=@Perid",baglanti);
+--------------------------------------------------------------------------------------
+
+enter basýnca bir sonraki text box geç
+ if (e.KeyCode == Keys.Enter)
+            {
+                txtBoxSoyad.Focus();
+            }
+
+-----------------------------------------------------------------------------excell iþlemleri
+using Excel = Microsoft.Office.Interop.Excel;    
+
+if (dataGridViewDR.RowCount == 0)
+        MessageBox.Show("Excel'e Aktarýlacak Veri Bulunmamaktadýr...", "Uyarý", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    else
+    {
+        this.Cursor = Cursors.WaitCursor;
+        Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+        Microsoft.Office.Interop.Excel.Workbook excelWorkbook;
+        Microsoft.Office.Interop.Excel.Worksheet excelWorksheet;
+        Microsoft.Office.Interop.Excel.Range excelCellrange;
+
+        excel.Visible = false;
+        excel.DisplayAlerts = false;
+
+        //excelWorkbook = excel.Workbooks.Add(Type.Missing);
+        //excelWorkbook = excel.Workbooks.Open("C:\\Users\\Carpark\\Documents\\Deneme.xlsx");
+        //excelWorkbook = excel.Workbooks.Open(Application.StartupPath + "\\Rapor\\DailyReport.xlsx");
+        excelWorkbook = excel.Workbooks.Open("C:\\M\\DailyReport.xlsx");
+        excelWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)excelWorkbook.Worksheets.Item["DailyReport"];
+        //excelWorksheet.Name = "DailyReport";
+        //excelWorksheet.Cells[1, 1] = "Tarih";
+        //excelWorksheet.Cells[1, 2] = "Otopark";
+        //excelWorksheet.Cells[1, 3] = "Taným";
+        //excelWorksheet.Cells[1, 4] = "Adet";
+        //excelWorksheet.Cells[1, 5] = "Toplam";
+        //excelWorksheet.Cells[1, 6] = "ÖDeme Yöntemi";
+        //excelWorksheet.Cells[1, 7] = "Net";
+
+        decimal toplam = 0;
+        decimal nakitToplam = 0;
+        decimal krediKartiToplam = 0;
+        decimal cariToplam = 0;
+        decimal faturaToplam = 0;
+        decimal ichatNakitToplam = 0;
+        decimal ichatKrediKartiToplam = 0;
+        decimal ichatCariToplam = 0;
+        decimal ichatFaturaToplam = 0;
+        decimal DHhatNakitToplam = 0;
+        decimal DHhatKrediKartiToplam = 0;
+        decimal DHhatCariToplam = 0;
+        decimal DHhatFaturaToplam = 0;
+        decimal RENTNakitToplam = 0;
+        decimal RentkrediKartiToplam = 0;
+        decimal RentCari = 0;
+        decimal RentFaturaToplam = 0;
+        decimal aboneharicigelir = 0;
+        int idN = 0;
+        int idK = 0;
+        int idF = 0;
+        int idC = 0;
+        int izN = 0;
+        int izK = 0;
+        int izF = 0;
+        int izC = 0;
+        int irN = 0;
+        int irK = 0;
+        int irF = 0;
+        int irC = 0;
+
+        int satirArttirimi = 5;
+
+        for (int i = 0; i < dataGridViewDR.RowCount; i++)
+        {
+            excelWorksheet.Cells[i + satirArttirimi, 1] = Convert.ToDateTime(dataGridViewDR.Rows[i].Cells["TARIH"].Value).ToString("yyyy-MM-dd");
+            excelWorksheet.Cells[i + satirArttirimi, 2] = dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString();
+            excelWorksheet.Cells[i + satirArttirimi, 3] = dataGridViewDR.Rows[i].Cells["TANIM"].Value.ToString();
+            excelWorksheet.Cells[i + satirArttirimi, 4] = Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value);
+            excelWorksheet.Cells[i + satirArttirimi, 5] = Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+            excelWorksheet.Cells[i + satirArttirimi, 6] = dataGridViewDR.Rows[i].Cells["ODEME_YONTEMI"].Value.ToString();
+            excelWorksheet.Cells[i + satirArttirimi, 7] = dataGridViewDR.Rows[i].Cells["NET"].Value.ToString();
+
+            toplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+
+            string nakit = dataGridViewDR.Rows[i].Cells["NET"].Value.ToString();
+
+            if (dataGridViewDR.Rows[i].Cells["TANIM"].Value.ToString() == "KSB")
+            {
+                aboneharicigelir += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+            }
+
+            if (dataGridViewDR.Rows[i].Cells["TANIM"].Value.ToString() == "KEY KART")
+            {
+                aboneharicigelir += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+            }
+
+
+
+            if (nakit=="NAKÝT")
+            {
+                nakitToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+            }
+            if (dataGridViewDR.Rows[i].Cells["NET"].Value.ToString() == "KREDÝ KARTI")
+            {
+                krediKartiToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+            }
+
+            if (dataGridViewDR.Rows[i].Cells["NET"].Value.ToString() == "CARÝ")
+            {
+                cariToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+            }
+            if (dataGridViewDR.Rows[i].Cells["NET"].Value.ToString() == "FATURA")
+            {
+                faturaToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+            }
+
+
+
+
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString()== "IC HAT OTOPARK" && nakit == "NAKÝT")
+            {
+                ichatNakitToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                idN = idN + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value) ;
+            }
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "IC HAT OTOPARK" && nakit == "KREDÝ KARTI")
+            {
+                ichatKrediKartiToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                idK = idK  + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value);
+            }
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "IC HAT OTOPARK" && nakit == "CARÝ")
+            {
+
+                if (dataGridViewDR.Rows[i].Cells["TOPLAM"].Value == null)
+                {
+                }
+                else
+                {
+                    ichatCariToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                    idC = idC + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value); ;
+                }
+            }
+
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "IC HAT OTOPARK" && nakit == "FATURA")
+            {
+                if (dataGridViewDR.Rows[i].Cells["TOPLAM"].Value == null)
+                {
+                }
+                else
+                {
+
+                    ichatFaturaToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                    idF = idF + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value); ;
+                }
+            }
+
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "DH HAT OTOPARK" && nakit == "NAKÝT")
+            {
+                DHhatNakitToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                izN=izN + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value); ;    
+            }
+
+
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "DH HAT OTOPARK" && nakit == "KREDÝ KARTI")
+            {
+                DHhatKrediKartiToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                izK=izK + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value); ;
+            }
+
+
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "DH HAT OTOPARK" && nakit == "CARÝ")
+            {
+
+                if (dataGridViewDR.Rows[i].Cells["TOPLAM"].Value == null)
+                {
+                }
+                else
+                {
+                    DHhatCariToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                    izC = izC + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value); ;  
+                }
+            }
+
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "DH HAT OTOPARK" && nakit == "FATURA")
+            {
+                if (dataGridViewDR.Rows[i].Cells["TOPLAM"].Value == null)
+                {
+                }
+                else
+                {
+                    DHhatFaturaToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                    izF = izF + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value); 
+                }
+            }
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "RENT A CAR OTOPARK" && nakit == "NAKÝT")
+            {
+                RENTNakitToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                irN=irN + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value);   
+            }
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "RENT A CAR OTOPARK" && nakit == "KREDÝ KARTI")
+            {
+                RentkrediKartiToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                irK = irK + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value); 
+            }
+
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "RENT A CAR OTOPARK" && nakit == "CARÝ")
+            {
+
+                if (dataGridViewDR.Rows[i].Cells["TOPLAM"].Value == null)
+                {
+                }
+                else
+                {
+                    RentCari += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                    irC = irC + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value);
+                }
+            }
+
+
+            if (dataGridViewDR.Rows[i].Cells["OTOPARK"].Value.ToString() == "RENT A CAR OTOPARK" && nakit == "FATURA")
+            {
+                if (dataGridViewDR.Rows[i].Cells["TOPLAM"].Value == null)
+                {
+                }
+                else
+                {
+                    RentFaturaToplam += Convert.ToDecimal(dataGridViewDR.Rows[i].Cells["TOPLAM"].Value);
+                    irF = irF + Convert.ToInt32(dataGridViewDR.Rows[i].Cells["ADET"].Value); 
+                }
+            }
+
+
+
+        }
+
+
+
+
+        
+       
+
+
+        TxtGenelToplam.Text = Convert.ToString(toplam);
+        TLpara = double.Parse(TxtGenelToplam.Text);
+        TxtGenelToplam.Text=TLpara.ToString("N");
+
+
+
+        txtDRNakit.Text = Convert.ToString(nakitToplam);
+        TLpara = double.Parse(txtDRNakit.Text);
+        txtDRNakit.Text= TLpara.ToString("N");
+
+        txtKrediKarti.Text = Convert.ToString(krediKartiToplam);
+        TLpara = double.Parse(txtKrediKarti.Text);
+        txtKrediKarti.Text=TLpara.ToString("N");
+
+        txtDRFat.Text = Convert.ToString(faturaToplam);
+        TLpara = double.Parse(txtDRFat.Text);
+        txtDRFat.Text= TLpara.ToString("N");
+
+
+        txtDRCari.Text = Convert.ToString(cariToplam);
+        TLpara = double.Parse(txtDRCari.Text);
+        txtDRCari.Text = TLpara.ToString("N");
+
+
+
+        //excelWorksheet.Cells[dataGridViewDR.RowCount + satirArttirimi+1, 5] = toplam;
+        excelWorksheet.Cells[3,10] = toplam;
+
+        //excelWorksheet.Cells[dataGridViewDR.RowCount + satirArttirimi + 1, 4].Value = "GENEL HASILAT TOPLAMI";
+        excelWorksheet.Cells[4,10] = txtDRNakit.Text;
+        //excelWorksheet.Cells[dataGridViewDR.RowCount + satirArttirimi + 2, 4].Value = "NAKÝT TOPLAMI";
+        excelWorksheet.Cells[5,10] = txtKrediKarti.Text;
+        //excelWorksheet.Cells[dataGridViewDR.RowCount + satirArttirimi + 3, 4].Value = "KREDÝ KARTI TOPLAMI";
+        excelWorksheet.Cells[6,10] = txtDRFat.Text;
+        //excelWorksheet.Cells[dataGridViewDR.RowCount + satirArttirimi + 4, 4].Value = "FATURA TOPLAMI";
+        excelWorksheet.Cells[7,10] = txtDRCari.Text;
+        // excelWorksheet.Cells[8,10].Value = "CARÝ TOPLAMI";
+        //excelWorksheet.Cells[dataGridViewDR.RowCount+6, 4].Value = "GENEL HASILAT TOPLAMI";
+        excelWorksheet.Cells[11, 10] = ichatNakitToplam;
+        excelWorksheet.Cells[12, 10] = ichatKrediKartiToplam;
+        excelWorksheet.Cells[13, 10] = ichatFaturaToplam;
+        excelWorksheet.Cells[14, 10] = ichatCariToplam;
+        excelWorksheet.Cells[17, 10] = DHhatNakitToplam;
+        excelWorksheet.Cells[18, 10] = DHhatKrediKartiToplam;
+        excelWorksheet.Cells[19, 10] = DHhatFaturaToplam;
+        excelWorksheet.Cells[20, 10] = DHhatCariToplam;
+        excelWorksheet.Cells[23, 10] = RENTNakitToplam;
+        excelWorksheet.Cells[24, 10] = RentkrediKartiToplam;
+        excelWorksheet.Cells[25, 10] = RentFaturaToplam;
+        excelWorksheet.Cells[26, 10] = RentCari;
+
+
+        excelWorksheet.Cells[11, 11] = idN;
+        excelWorksheet.Cells[12, 11] = idK;
+        excelWorksheet.Cells[13, 11] = idF;
+        excelWorksheet.Cells[14, 11] = idC;
+        excelWorksheet.Cells[17, 11] = izN;
+        excelWorksheet.Cells[18, 11] = izK;
+        excelWorksheet.Cells[19, 11] = izF;
+        excelWorksheet.Cells[20, 11] = izC;
+
+
+        excelWorksheet.Cells[23, 11] = irN;
+        excelWorksheet.Cells[24, 11] = irK;
+        excelWorksheet.Cells[25, 11] = irF;
+        excelWorksheet.Cells[26, 11] = irC;
+        excelWorksheet.Cells[29,10]= aboneharicigelir;
+        TXTaboneHariciGelir.Text = aboneharicigelir.ToString("N");
+        
+        //DataTable dtbl = new DataTable();
+        
+
+        for (int x = 0; x < ax-1; x++)
+        {
+            // adding a row each time it loops in and find a row in the dtbl
+                                  
+            
+                dataGridView1.Rows.Add();
+                dataGridView1.Rows[x].Cells[0].Value = comboBox1.Items[x].ToString();
+            
+      
+        
+        }
+
+        dataGridView1.Rows[1].Cells[1].Value = Convert.ToString(ichatNakitToplam);
+        dataGridView1.Rows[1].Cells[2].Value = Convert.ToString(ichatKrediKartiToplam);
+        dataGridView1.Rows[1].Cells[3].Value = Convert.ToString(ichatFaturaToplam);
+        dataGridView1.Rows[1].Cells[4].Value = Convert.ToString(ichatCariToplam);
+
+        dataGridView1.Rows[0].Cells[1].Value = Convert.ToString(DHhatNakitToplam);
+        dataGridView1.Rows[0].Cells[2].Value = Convert.ToString(DHhatKrediKartiToplam);
+        dataGridView1.Rows[0].Cells[3].Value = Convert.ToString(DHhatFaturaToplam);
+        dataGridView1.Rows[0].Cells[4].Value = Convert.ToString(DHhatCariToplam);
+
+
+        dataGridView1.Rows[2].Cells[1].Value = Convert.ToString(RENTNakitToplam);
+        dataGridView1.Rows[2].Cells[2].Value = Convert.ToString(RentkrediKartiToplam);
+        dataGridView1.Rows[2].Cells[3].Value = Convert.ToString(RentFaturaToplam);
+        dataGridView1.Rows[2].Cells[4].Value = Convert.ToString(RentCari);
+
+
+
+
+
+
+
+
+
+        excelCellrange = excelWorksheet.Range[excelWorksheet.Cells[satirArttirimi, 1], excelWorksheet.Cells[dataGridViewDR.RowCount+ satirArttirimi, 7]];
+        Microsoft.Office.Interop.Excel.Borders excelBorders = excelCellrange.Borders;
+        excelBorders.LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous;
+        excelBorders.Weight = 2d;
+
+        //excelCellrange.Columns.AutoFit();
+
+        SaveFileDialog saveDialog = new SaveFileDialog();
+        saveDialog.Title = "Kaydedilecek Yolu Seçiniz..";
+        saveDialog.Filter = "Excel Dosyasý|*.xlsx";
+        saveDialog.FileName = "DailyReport_" + dateTimePickerDR.Value.Date.ToString("yyyy-MM-dd");
+
+        if (saveDialog.ShowDialog() == DialogResult.OK)
+        {
+            excelWorksheet.SaveAs(saveDialog.FileName);
+
+            MessageBox.Show("Rapor Excel Formagtýnda Kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        excelWorkbook.Close();
+        excel.Quit();
+        this.Cursor = Cursors.Default;
+    }
+
+}
+catch (Exception)
+{
+    MessageBox.Show("Excel Versiyon Hatasý");
+}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

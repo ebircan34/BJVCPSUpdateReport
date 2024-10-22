@@ -1,0 +1,5 @@
+Select RevenuePayments.Time,RevenuePayments.TransactionNo,PaymentWithValidationProviders.ValidationProvider,PaymentWithValidationProviders.OpenAmount,PaymentWithValidationProviders.OperatorSurname,RevenuePayments.PaymentType
+from PaymentWithValidationProviders
+INNER JOIN RevenuePayments ON PaymentWithValidationProviders.TransactionNo=RevenuePayments.TransactionNo
+where RevenuePayments.Time>='2024-03-27' and OpenAmount>1001 
+and RevenuePayments.InvoiceNo=PaymentWithValidationProviders.InvoiceNo
