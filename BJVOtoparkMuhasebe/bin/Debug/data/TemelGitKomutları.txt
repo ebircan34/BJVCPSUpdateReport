@@ -1,0 +1,22 @@
+git status
+
+git add .
+
+git commit -am "test"
+
+git push
+
+
+git pull
+
+
+
+git init // git için çalışılabilir klasör olarak ata
+git status // git için son güncel durumu gösterir
+git add . tüm değişiklikleri kabul et
+git commit -m "Mesajı Yaz"
+git push origin master
+
+git fetch
+git merge
+git pull --rebase --autostash
