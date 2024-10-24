@@ -477,7 +477,6 @@
             this.txtAboneKrediKartiGelir.Size = new System.Drawing.Size(100, 26);
             this.txtAboneKrediKartiGelir.TabIndex = 32;
             this.txtAboneKrediKartiGelir.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtAboneKrediKartiGelir_KeyDown);
-           // this.txtAboneKrediKartiGelir.Leave += new System.EventHandler(this.txtAboneKrediKartiGelir_Leave);
             // 
             // txtAboneKrediKartiAdet
             // 
@@ -758,7 +757,7 @@
             this.txtNakitFaturaGelir.Name = "txtNakitFaturaGelir";
             this.txtNakitFaturaGelir.Size = new System.Drawing.Size(100, 26);
             this.txtNakitFaturaGelir.TabIndex = 24;
-            this.txtNakitFaturaGelir.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtIhNakitFaturaGelir_KeyDown);
+            this.txtNakitFaturaGelir.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNakitFaturaGelir_KeyDown_1);
             // 
             // txtNakitFaturaAdet
             // 
@@ -897,9 +896,10 @@
             // 
             // btnBulGetir
             // 
-            this.btnBulGetir.Location = new System.Drawing.Point(1407, 10);
+            this.btnBulGetir.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnBulGetir.Location = new System.Drawing.Point(1389, 10);
             this.btnBulGetir.Name = "btnBulGetir";
-            this.btnBulGetir.Size = new System.Drawing.Size(162, 52);
+            this.btnBulGetir.Size = new System.Drawing.Size(180, 52);
             this.btnBulGetir.TabIndex = 38;
             this.btnBulGetir.Text = "HesaplaGetir";
             this.btnBulGetir.UseVisualStyleBackColor = true;

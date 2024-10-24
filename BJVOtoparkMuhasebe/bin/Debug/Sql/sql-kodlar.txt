@@ -2,3 +2,6 @@ select * from RevenueParkingTransSales where Time>='2024.10.03 00:00' and Time<=
 select count(*) from RevenueParkingTransSales where Time>='2024.10.03 00:00' and Time<='2024.10.03 23:59' and DeviceDesig='IC ABONE WORKSTATION'
 select sum(RevenueParkingTransSales.Revenue) from RevenueParkingTransSales where Time>='2024.10.03 00:00' and Time<='2024.10.03 23:59' and DeviceDesig='IC ABONE WORKSTATION' 
 select DeviceDesig,Count(*) as Adet,sum(RevenueParkingTransSales.Revenue)as Toplam from RevenueParkingTransSales where Time>='2024.10.03' and Time<='2024.10.04' GROUP By DeviceDesig
+
+
+

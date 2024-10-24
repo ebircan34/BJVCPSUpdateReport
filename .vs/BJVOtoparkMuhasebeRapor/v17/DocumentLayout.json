@@ -11,6 +11,10 @@
       "RelativeMoniker": "D:0:0:{83058C9D-581E-44E6-8350-CBF287A44D0D}|BJVOtoparkMuhasebe\\BJVOtoparkMuhasebe.csproj|solutionrelative:bjvotoparkmuhasebe\\ihgenelhasilatfrm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{83058C9D-581E-44E6-8350-CBF287A44D0D}|BJVOtoparkMuhasebe\\BJVOtoparkMuhasebe.csproj|c:\\users\\parkuser\\source\\repos\\bjvcpsupdatereport\\bjvotoparkmuhasebe\\ihgenelhasilatfrm.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{83058C9D-581E-44E6-8350-CBF287A44D0D}|BJVOtoparkMuhasebe\\BJVOtoparkMuhasebe.csproj|solutionrelative:bjvotoparkmuhasebe\\ihgenelhasilatfrm.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{83058C9D-581E-44E6-8350-CBF287A44D0D}|BJVOtoparkMuhasebe\\BJVOtoparkMuhasebe.csproj|C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\bjvotoparkmuhasebe\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{83058C9D-581E-44E6-8350-CBF287A44D0D}|BJVOtoparkMuhasebe\\BJVOtoparkMuhasebe.csproj|solutionrelative:bjvotoparkmuhasebe\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -26,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -50,6 +54,32 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ihGenelHasilatFrm.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\ihGenelHasilatFrm.Designer.cs",
+              "RelativeDocumentMoniker": "BJVOtoparkMuhasebe\\ihGenelHasilatFrm.Designer.cs",
+              "ToolTip": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\ihGenelHasilatFrm.Designer.cs",
+              "RelativeToolTip": "BJVOtoparkMuhasebe\\ihGenelHasilatFrm.Designer.cs",
+              "ViewState": "AgIAAOACAAAAAAAAAAAowPcCAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-24T18:22:31.894Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ihGenelHasilatFrm.cs",
+              "DocumentMoniker": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
+              "RelativeDocumentMoniker": "BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
+              "ToolTip": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
+              "RelativeToolTip": "BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
+              "ViewState": "AgIAAGsCAAAAAAAAAAAgwHUCAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-23T17:16:57.723Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "ihGenelHasilatFrm.cs [Design]",
               "DocumentMoniker": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
@@ -62,39 +92,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ihGenelHasilatFrm.cs",
-              "DocumentMoniker": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
-              "RelativeDocumentMoniker": "BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
-              "ToolTip": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
-              "RelativeToolTip": "BJVOtoparkMuhasebe\\ihGenelHasilatFrm.cs",
-              "ViewState": "AgIAALECAAAAAAAAAAAqwDIDAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-20T20:48:14.043Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Form1.cs",
               "DocumentMoniker": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\Form1.cs",
               "RelativeDocumentMoniker": "BJVOtoparkMuhasebe\\Form1.cs",
               "ToolTip": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\Form1.cs",
               "RelativeToolTip": "BJVOtoparkMuhasebe\\Form1.cs",
-              "ViewState": "AQIAABIAAAAAAAAAAAAiwDoAAAAJAAAA",
+              "ViewState": "AgIAABMAAAAAAAAAAAAUwDoAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-19T18:21:55.947Z"
+              "WhenOpened": "2024-10-19T18:21:55.947Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Form1.cs [Design]",
               "DocumentMoniker": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\Form1.cs",
               "RelativeDocumentMoniker": "BJVOtoparkMuhasebe\\Form1.cs",
-              "ToolTip": "C:\\Users\\ebircan\\source\\repos\\BJVOtoparkMuhasebeRapor - v2\\BJVOtoparkMuhasebe\\Form1.cs [Design]",
-              "RelativeToolTip": "..\\..\\..\\..\\ebircan\\source\\repos\\BJVOtoparkMuhasebeRapor - v2\\BJVOtoparkMuhasebe\\Form1.cs [Design]",
+              "ToolTip": "C:\\Users\\Parkuser\\source\\repos\\BJVCPSUpdateReport\\BJVOtoparkMuhasebe\\Form1.cs [Design]",
+              "RelativeToolTip": "BJVOtoparkMuhasebe\\Form1.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-19T16:58:22.01Z"
+              "WhenOpened": "2024-10-19T16:58:22.01Z",
+              "EditorCaption": " [Design]"
             }
           ]
         }
