@@ -68,6 +68,7 @@ namespace BJVOtoparkMuhasebe
             ekrancozbul();
             ClearAllText(this);
             SD_Connect();
+
             dateTimePicker1.Value = DateTime.Now;
             dateTimePicker2.Value = DateTime.Now;
             btnYeni.Enabled = true;
@@ -115,7 +116,7 @@ namespace BJVOtoparkMuhasebe
             if (e.KeyCode == Keys.Enter) 
             {
 
-                txtKrediKartiFaturaGelir.Text = string.Format("{0:c}", txtKrediKartiFaturaGelir.Text);
+                txtKrediKartiFaturaGelir.Text = string.Format("{0:N}", txtKrediKartiFaturaGelir.Text);
 
 
 
@@ -131,12 +132,98 @@ namespace BJVOtoparkMuhasebe
 
         private void txtKsbKrediKartiAdet_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) { txtKsbKrediKartiGelir.Focus(); }
+            if (e.KeyCode == Keys.Enter) 
+            {
+                int ApmAdet = 0;
+                int KasaAdet = 0;
+                DateTime dateTime;
+                dateTime = dateTimePicker1.Value.AddDays(1);
+                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and (DeviceDesig='IC HAT APM 01' OR DeviceDesig='IC HAT APM 02' OR DeviceDesig='RENT A CAR APM')";
+                SDbaglanti.Open();
+                SqlCommand cmd = new SqlCommand(query, SDbaglanti);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    if (dr[0] == string.Empty) { ApmAdet=0; }
+                    else
+                    {
+                        ApmAdet = Convert.ToInt32(dr[0]);
+                    }
+                }
+                SDbaglanti.Close();
+                
+                dateTime = dateTimePicker1.Value.AddDays(1);
+                query = "Select Count(*) from  RevenueManualPaymentMethods where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and (DeviceDesig='IC MERKEZ ODEME' OR DeviceDesig='IC CKS 2 ODEME' OR DeviceDesig='YENİ OTOPARK MOBO')";
+                SDbaglanti.Open();
+                cmd = new SqlCommand(query, SDbaglanti);
+                dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    if (dr[0] == string.Empty) { KasaAdet = 0; }
+                    else
+                    {
+                        KasaAdet = Convert.ToInt32(dr[0]);
+                    }
+                }
+                SDbaglanti.Close();
+                txtKsbKrediKartiAdet.Text = Convert.ToString(KasaAdet+ApmAdet);
+                txtKsbKrediKartiGelir.Focus(); 
+
+            }
         }
+
+
+
+
+
+
+
+
+
 
         private void txtKsbKrediKartiGelir_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) {txtAboneKrediKartiAdet.Focus();}
+            if (e.KeyCode == Keys.Enter)
+            {
+                decimal ApmPara = 0;
+                decimal KasaPara = 0;
+                DateTime dateTime;
+                dateTime = dateTimePicker1.Value.AddDays(1);
+                string query = "Select SUM(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and (DeviceDesig='IC HAT APM 01' OR DeviceDesig='IC HAT APM 02' OR DeviceDesig='RENT A CAR APM')";
+                SDbaglanti.Open();
+                SqlCommand cmd = new SqlCommand(query, SDbaglanti);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    if (dr[0] == string.Empty) { ApmPara = 0; }
+                    else
+                    {
+                        ApmPara = Convert.ToDecimal(dr[0]);
+                    }
+                }
+                SDbaglanti.Close();
+
+                dateTime = dateTimePicker1.Value.AddDays(1);
+                query = "Select SUM(Revenue) from  RevenueManualPaymentMethods where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and (DeviceDesig='IC MERKEZ ODEME' OR DeviceDesig='IC CKS 2 ODEME' OR DeviceDesig='YENİ OTOPARK MOBO')";
+                SDbaglanti.Open();
+                cmd = new SqlCommand(query, SDbaglanti);
+                dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    if (dr[0] == string.Empty) { KasaPara = 0; }
+                    else
+                    {
+                        KasaPara = Convert.ToDecimal(dr[0]);
+                    }
+                }
+                SDbaglanti.Close();
+                decimal toplam = 0;
+                toplam = KasaPara + ApmPara;
+
+                txtKsbKrediKartiGelir.Text = string.Format("{0:n}",toplam);
+                txtAboneKrediKartiAdet.Focus();
+                     
+            }
         }
 
         private void txtAboneKrediKartiAdet_KeyDown(object sender, KeyEventArgs e)
@@ -206,7 +293,7 @@ namespace BJVOtoparkMuhasebe
                 dr.Close();
 
                 txtAboneKrediKartiGelir.Text = Convert.ToString(KKAbonePara + KKCongPara);
-                txtAboneKrediKartiGelir.Text = string.Format("{0:C}", txtAboneKrediKartiGelir.Text);
+                txtAboneKrediKartiGelir.Text = string.Format("{0:n}", txtAboneKrediKartiGelir.Text);
                 btnBulGetir.Focus();
                 btnBulGetir.BackColor = Color.Gold;
             }
@@ -297,19 +384,19 @@ namespace BJVOtoparkMuhasebe
 
         private void txtKsbKrediKartiGelir_Leave(object sender, EventArgs e)
         {
-            double para;
+            //double para;
 
-            if (txtKsbKrediKartiGelir.Text == string.Empty) { }
-            else
-            {
-                para = double.Parse(txtKsbKrediKartiGelir.Text);
-                //    //para = Math.Round(para, 2);
-                //txtMerkezKasaGelir.Text= String.Format("{0:N}”,10000);
-                //txtMerkezKasaGelir.Text = String.Format("{0:0.0,0}", para);
-                txtKsbKrediKartiGelir.Text = para.ToString("N");
+            //if (txtKsbKrediKartiGelir.Text == string.Empty) { }
+            //else
+            //{
+            //    para = double.Parse(txtKsbKrediKartiGelir.Text);
+            //    //    //para = Math.Round(para, 2);
+            //    //txtMerkezKasaGelir.Text= String.Format("{0:N}”,10000);
+            //    //txtMerkezKasaGelir.Text = String.Format("{0:0.0,0}", para);
+            //    txtKsbKrediKartiGelir.Text = para.ToString("N");
 
 
-            }
+            //}
 
         }
 
@@ -351,36 +438,46 @@ namespace BJVOtoparkMuhasebe
 
         private void btnBulGetir_Click_1(object sender, EventArgs e)
         {
-            //genelToplam = 0;
-            //MParkCksToplam = 0; MParkCks2Toplam = 0; NFAT = 0; KFAT = 0; EFAT = 0; AboneHariciGelirToplam = 0;
-            //decimal congressAbone = 0;
-            //int ToplamAdet = 0;
-            //int AbonelikHariciGelirAdet = 0;
+            txtKontol = false;
+            genelToplam = 0;
+            MParkCksToplam = 0; MParkCks2Toplam = 0; NFAT = 0; KFAT = 0; EFAT = 0; AboneHariciGelirToplam = 0;
+            int Adet = 0;
+            int AboneHariciGelirAdet= 0;
 
-            //try
-            //{
-                
-            //    MParkCksToplam = decimal.Parse(txtMrkzOGelir.Text);
-            //    MParkCks2Toplam = decimal.Parse(txtIcCks2OGelir.Text);
-            //    NFAT = decimal.Parse(txtNakitFaturaGelir.Text);
-            //    KFAT = decimal.Parse(txtKrediKartiFaturaGelir.Text);
-            //    EFAT = decimal.Parse(txtEFTFaturaGelir.Text);
-            //    genelToplam = MParkCksToplam + MParkCks2Toplam + NFAT + EFAT + KFAT;
-            //    txtGenelToplam.Text = genelToplam.ToString("N");
-            //    AboneHariciGelirToplam = genelToplam - (decimal.Parse(txtAboneOCongGelir.Text) + decimal.Parse(txtIcWksAboneGelir.Text) + decimal.Parse(txtRentCarMbCongGelir.Text) + decimal.Parse(txtRentCarMbGelir.Text) + NFAT + KFAT + EFAT);
-            //    ToplamAdet = (int.Parse(txtMrkzOAdet.Text) + int.Parse(txtIcCks2OAdet.Text) + int.Parse(txtNakitFaturaAdet.Text) + int.Parse(txtKrediKartiFaturaAdet.Text) + int.Parse(txtEFTFaturaAdet.Text));
-            //    txtGenelToplamAdet.Text = ToplamAdet.ToString();
-            //    AbonelikHariciGelirAdet = (ToplamAdet - (int.Parse(txtAboneOCongAdet.Text) + int.Parse(txtIcWksAboneAdet.Text) + int.Parse(txtRentCarMbAdet.Text) + int.Parse(txtRentCarMbCongAdet.Text) + int.Parse(txtNakitFaturaAdet.Text) + int.Parse(txtKrediKartiFaturaAdet.Text) + int.Parse(txtEFTFaturaAdet.Text)));
-            //    txtAboneHariciGelirAd.Text = AbonelikHariciGelirAdet.ToString();
-            //    txtAboneHariciGelir.Text = AboneHariciGelirToplam.ToString("N");
-                
+            ControlAllText(this);
+            if (txtKontol == true)
+            {
+                MessageBox.Show("HATA","Sarı Alanlar Boş Geçilemez!",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            }
+            if (txtKontol == false)
+            {
+                try
+                { 
+                MParkCksToplam = decimal.Parse(txtMrkzOGelir.Text);
+                MParkCks2Toplam = decimal.Parse(txtIcCks2OGelir.Text);
+                NFAT = decimal.Parse(txtNakitFaturaGelir.Text);
+                KFAT = decimal.Parse(txtKrediKartiFaturaGelir.Text);
+                EFAT = decimal.Parse(txtEFTFaturaGelir.Text);
+                genelToplam = MParkCksToplam + MParkCks2Toplam + NFAT + EFAT + KFAT+decimal.Parse(txtAPM1Gelir.Text)+decimal.Parse(txtAPM2Gelir.Text)+decimal.Parse(txtAPMRentCarGelir.Text)+decimal.Parse(txtRentCarMbGelir.Text);
+                AboneHariciGelirToplam = genelToplam - (decimal.Parse(txtIcWksAboneGelir.Text) + NFAT + KFAT + EFAT);
+                txtGenelToplam.Text = genelToplam.ToString("N");
+                Adet = int.Parse(txtMrkzOAdet.Text) +int.Parse(txtIcCks2OAdet.Text)+int.Parse(txtRentCarMbAdet.Text)+int.Parse(txtNakitFaturaAdet.Text)+int.Parse(txtKrediKartiFaturaAdet.Text)+int.Parse(txtEFTFaturaAdet.Text)+int.Parse(txtAPM1Adet.Text)+int.Parse(txtAPM2Adet.Text)+int.Parse(txtAPMRentCarAdet.Text);
+                txtGenelToplamAdet.Text = Adet.ToString();
+                AboneHariciGelirAdet = (Adet - (int.Parse(txtIcWksAboneAdet.Text) + int.Parse(txtNakitFaturaAdet.Text) + int.Parse(txtKrediKartiFaturaAdet.Text) + int.Parse(txtEFTFaturaAdet.Text)));
+                txtAboneHariciGelirAd.Text = AboneHariciGelirAdet.ToString();
+                ControlAllTextColor(this);
+                txtAboneHariciGelir.Text= AboneHariciGelirToplam.ToString("N");
 
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show("Matematiksel İşlem Hatası! Çözümü için Boş Alan Kontrolü Yapınız!");
-            //}
+
+
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Matematiksel İşlem Hatası! Çözümü için Veri Alanlarında Kontrolü Yapınız!");
+                }
+            }
         }
 
         private void TumListe()
@@ -573,7 +670,7 @@ namespace BJVOtoparkMuhasebe
                 int Adet = 0;
                 DateTime dateTime;
                 dateTime= dateTimePicker1.Value.AddDays(1);
-                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC MERKEZ ODEME'";
+                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC MERKEZ ODEME'";
                 SDbaglanti.Open();
                 SqlCommand cmd= new SqlCommand(query,SDbaglanti);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -605,7 +702,7 @@ namespace BJVOtoparkMuhasebe
                 decimal Gelir = 0;
                 DateTime dateTime;
                 dateTime = dateTimePicker1.Value.AddDays(1);
-                string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC MERKEZ ODEME'";
+                string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC MERKEZ ODEME'";
                 SDbaglanti.Open();
                 SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -617,7 +714,7 @@ namespace BJVOtoparkMuhasebe
                         Gelir = Convert.ToInt32(dr[0]);
                     }
                 }
-                txtMrkzOGelir.Text = Gelir.ToString("C");
+                txtMrkzOGelir.Text = Gelir.ToString("N");
 
                 SDbaglanti.Close();
 
@@ -674,7 +771,7 @@ namespace BJVOtoparkMuhasebe
                         Gelir = Convert.ToDecimal(dr[0]);
                     }
                 }
-                txtIcWksAboneGelir.Text = string.Format("{0:c}",Gelir); 
+                txtIcWksAboneGelir.Text = string.Format("{0:N}",Gelir); 
 
                 SDbaglanti.Close();
                 txtIcCks2OAdet.Focus();
@@ -691,7 +788,7 @@ namespace BJVOtoparkMuhasebe
                 int Adet = 0;
                 DateTime dateTime;
                 dateTime = dateTimePicker1.Value.AddDays(1);
-                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC CKS 2 ODEME'";
+                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC CKS 2 ODEME'";
                 SDbaglanti.Open();
                 SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -717,19 +814,19 @@ namespace BJVOtoparkMuhasebe
 
                 if (txtIcCks2OAdet.Text == "0")
                 {
-                 txtIcCks2OGelir.Text = string.Format("{0:c}",0);
+                 txtIcCks2OGelir.Text = string.Format("{0:N}",0);
                 }
                 else
                 {
                     decimal Gelir = 0;
                     DateTime dateTime;
                     dateTime = dateTimePicker1.Value.AddDays(1);
-                    string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC CKS 2 ODEME'";
+                    string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC CKS 2 ODEME'";
                     SDbaglanti.Open();
                     SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                     SqlDataReader dr = cmd.ExecuteReader();
                     
-                    txtIcCks2OGelir.Text = string.Format("{0:c}", Gelir);
+                    txtIcCks2OGelir.Text = string.Format("{0:N}", Gelir);
 
                     SDbaglanti.Close();
                    
@@ -768,7 +865,7 @@ namespace BJVOtoparkMuhasebe
         {
             if (e.KeyCode == Keys.Enter)
             {
-                txtEFTFaturaGelir.Text = string.Format("{0:c}", txtEFTFaturaGelir.Text);
+                txtEFTFaturaGelir.Text = string.Format("{0:n}", txtEFTFaturaGelir.Text);
                 txtAPM1Adet.Focus();
             }
         }
@@ -780,7 +877,7 @@ namespace BJVOtoparkMuhasebe
                 int Adet = 0;
                 DateTime dateTime;
                 dateTime = dateTimePicker1.Value.AddDays(1);
-                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC HAT APM 01'";
+                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC HAT APM 01'";
                 SDbaglanti.Open();
                 SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -813,7 +910,7 @@ namespace BJVOtoparkMuhasebe
                     decimal Gelir = 0;
                     DateTime dateTime;
                     dateTime = dateTimePicker1.Value.AddDays(1);
-                    string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC HAT APM 01'";
+                    string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC HAT APM 01'";
                     SDbaglanti.Open();
                     SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                     SqlDataReader dr = cmd.ExecuteReader();
@@ -838,7 +935,7 @@ namespace BJVOtoparkMuhasebe
                 int Adet = 0;
                 DateTime dateTime;
                 dateTime = dateTimePicker1.Value.AddDays(1);
-                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC HAT APM 02'";
+                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC HAT APM 02'";
                 SDbaglanti.Open();
                 SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -870,7 +967,7 @@ namespace BJVOtoparkMuhasebe
                     decimal Gelir = 0;
                     DateTime dateTime;
                     dateTime = dateTimePicker1.Value.AddDays(1);
-                    string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC HAT APM 02'";
+                    string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='IC HAT APM 02'";
                     SDbaglanti.Open();
                     SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                     SqlDataReader dr = cmd.ExecuteReader();
@@ -893,7 +990,7 @@ namespace BJVOtoparkMuhasebe
                 int Adet = 0;
                 DateTime dateTime;
                 dateTime = dateTimePicker1.Value.AddDays(1);
-                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='RENT A CAR APM'";
+                string query = "Select Count(*) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='RENT A CAR APM'";
                 SDbaglanti.Open();
                 SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -926,7 +1023,7 @@ namespace BJVOtoparkMuhasebe
                     decimal Gelir = 0;
                     DateTime dateTime;
                     dateTime = dateTimePicker1.Value.AddDays(1);
-                    string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<='" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='RENT A CAR APM'";
+                    string query = "Select sum(Revenue) from  RevenueParkingTransSales where Time>='" + dateTimePicker1.Value.ToString("yyyy-MM-dd") + "' and Time<'" + dateTime.ToString("yyyy-MM-dd") + "' and DeviceDesig='RENT A CAR APM'";
                     SDbaglanti.Open();
                     SqlCommand cmd = new SqlCommand(query, SDbaglanti);
                     SqlDataReader dr = cmd.ExecuteReader();
@@ -1006,7 +1103,7 @@ namespace BJVOtoparkMuhasebe
                         else
                         {
                             para = Convert.ToDecimal(dr[0].ToString());
-                            txtIcWksCongGelir.Text = string.Format("{0:c}", Convert.ToString(para));
+                            txtIcWksCongGelir.Text = string.Format("{0:N}", Convert.ToString(para));
                         }
 
                     }
@@ -1132,7 +1229,14 @@ namespace BJVOtoparkMuhasebe
             }
             txtRentCarMbAdet.Text = "0";
             txtRentCarMbGelir.Text = "0";
-            
+            txtGenelToplam.Text = "0";
+            txtAboneHariciGelir.Text = "0";
+            txtAboneHariciGelirAd.Text = "0";
+            txtGenelToplamAdet.Text = "0";
+
+
+
+
 
         }
 
